@@ -9,57 +9,57 @@ class Parser:
     A_COMMAND = 0
     C_COMMAND = 1
     L_COMMAND = 2
-    
+
     def __init__(self, file_name) -> None:
         file = open(file_name, 'r')
         self._lines = file.read()
         self._commands = self._commands_list(self._lines.split('\n'))
         self.current_command = ''
-        
+
         self._init_command_info()
-    
+
     def _init_command_info(self):
         self._cmd_type = -1
         self._symbol = ''
         self._dest = ''
         self._comp = ''
         self._jump = ''
-    
+
     def __str__(self) -> str:
         pass
-    
+
     # Gibt es mehr Lines? -> BOOL
     def hasMoreLines(self):
         return self._commands != []
-    
+
     # Überspringt Whitespace / comments.
     # Liest nächste Instruction und macht sie zur aktuellen
     # Nur wenn hasMoreLines() = true
     def advance(self):
         self._init_command_info()
         self.current_command = self._commands.pop(0)
-        
+
         self._cmd_type = self.getInstructionType(self.current_command)
-        
+
         if (self._cmd_type is Parser.A_COMMAND or self._cmd_type is Parser.L_COMMAND):
             self._symbol = self.getSymbol(self.current_command)
         if (self._cmd_type is Parser.C_COMMAND):
             self._dest = self.getDest(self.current_command)
             self._comp = self.getComp(self.current_command)
             self._jump = self.getJump(self.current_command)
-    
+
     def _commands_list(self, lines):
         return [c for c in [self._single_command(l) for l in lines] if c != '']
-    
+
     def _single_command(self, line):
         return self._remove_comments(line)
-    
+
     _comment = re.compile('//.*$')
     def _remove_comments(self, line):
         return self._comment.sub('', line).strip()
-    
-    
-    
+
+
+
     # Gibt den Typ der Instruction zurück:
     # A_INSTRUCTION für @xxx, wo xxx dezimal zahl oder symbol ist
     # C_INSTRUCTION für dest=comp;jump
@@ -122,16 +122,16 @@ class Parser:
 
     def command_type(self):
         return self._cmd_type
-    
+
     def symbol(self):
         return self._symbol
-    
+
     def dest(self):
         return self._dest
-    
+
     def comp(self):
         return self._comp
-    
+
     def jump(self):
         return self._jump
 
